@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Save } from 'lucide-react';
+const { useState } = React;
 
-export default function GastosTracker() {
+function GastosTracker() {
   const [gastos, setGastos] = useState([
     { nombre: 'Café', semanal: 20000, mensual: 0, categoria: 'A', frecuencia: 'semanal' },
     { nombre: 'Metro', semanal: 30000, mensual: 0, categoria: 'A', frecuencia: 'semanal' },
@@ -18,7 +17,9 @@ export default function GastosTracker() {
     { nombre: 'Nueces integrales', semanal: 7500, mensual: 0, categoria: 'B', frecuencia: 'semanal' }
   ]);
 
-  const [nuevoGasto, setNuevoGasto] = useState({ nombre: '', semanal: 0, mensual: 0, categoria: 'A', frecuencia: 'semanal' });
+  const [nuevoGasto, setNuevoGasto] = useState({ 
+    nombre: '', semanal: 0, mensual: 0, categoria: 'A', frecuencia: 'semanal' 
+  });
 
   const calcularMensual = (gasto) => {
     return gasto.frecuencia === 'semanal' ? gasto.semanal * 4.33 : gasto.mensual;
@@ -54,13 +55,12 @@ export default function GastosTracker() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">💰 Tracker de Gastos</h1>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Tracker de Gastos</h1>
           <p className="text-slate-600">Todos los valores en pesos colombianos (COP)</p>
         </div>
-
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div className="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
-            <h2 className="text-xl font-bold text-blue-900 mb-4">📊 Categoría A - Principal</h2>
+            <h2 className="text-xl font-bold text-blue-900 mb-4">Categoría A - Principal</h2>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-blue-700">Total Semanal:</span>
@@ -72,9 +72,8 @@ export default function GastosTracker() {
               </div>
             </div>
           </div>
-
           <div className="bg-green-50 rounded-xl p-6 border-2 border-green-200">
-            <h2 className="text-xl font-bold text-green-900 mb-4">🛒 Categoría B - Otros</h2>
+            <h2 className="text-xl font-bold text-green-900 mb-4">Categoría B - Otros</h2>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-green-700">Total Semanal:</span>
@@ -87,9 +86,8 @@ export default function GastosTracker() {
             </div>
           </div>
         </div>
-
         <div className="bg-gradient-to-r from-slate-700 to-slate-600 rounded-xl p-6 mb-6 text-white shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">🎯 Resumen Total</h2>
+          <h2 className="text-2xl font-bold mb-4">Resumen Total</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="bg-white/20 rounded-lg p-4">
               <div className="text-sm opacity-90">Total Semanal (A+B)</div>
@@ -101,11 +99,10 @@ export default function GastosTracker() {
             </div>
           </div>
         </div>
-
         {['A', 'B'].map(cat => (
           <div key={cat} className="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h2 className="text-xl font-bold text-slate-800 mb-4">
-              {cat === 'A' ? '📋 Gastos Categoría A' : '📋 Gastos Categoría B'}
+              {cat === 'A' ? 'Gastos Categoría A' : 'Gastos Categoría B'}
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -165,7 +162,7 @@ export default function GastosTracker() {
                             onClick={() => eliminarGasto(realIdx)}
                             className="text-red-500 hover:text-red-700"
                           >
-                            <Trash2 size={18} />
+                            <span className="inline-block" aria-hidden="true">🗑️</span>
                           </button>
                         </td>
                       </tr>
@@ -176,9 +173,8 @@ export default function GastosTracker() {
             </div>
           </div>
         ))}
-
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-slate-800 mb-4">➕ Agregar Nuevo Gasto</h2>
+          <h2 className="text-xl font-bold text-slate-800 mb-4">Agregar Nuevo Gasto</h2>
           <div className="grid md:grid-cols-6 gap-3">
             <input
               placeholder="Nombre del gasto"
@@ -216,7 +212,7 @@ export default function GastosTracker() {
               onClick={agregarGasto}
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
             >
-              <Plus size={18} /> Agregar
+              <span className="inline-block" aria-hidden="true">+</span> Agregar
             </button>
           </div>
         </div>
@@ -224,3 +220,5 @@ export default function GastosTracker() {
     </div>
   );
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(<GastosTracker />);
