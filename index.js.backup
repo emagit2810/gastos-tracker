@@ -1,151 +1,21 @@
-const { useState, useEffect } = React;
-
-// Función para cargar datos del localStorage
-const cargarDatos = (clave, valorPorDefecto) => {
-  try {
-    const guardado = localStorage.getItem(clave);
-    return guardado ? JSON.parse(guardado) : valorPorDefecto;
-  } catch (error) {
-    console.error('Error al cargar datos:', error);
-    return valorPorDefecto;
-  }
-};
-
-// Componente de seguimiento de medicamentos
-function SeguimientoMedicamentos({ medicamentos, setMedicamentos }) {
-  const medicinasIniciales = [
-    { nombre: 'Bupropion', total: 30, restante: 30, dosisDiaria: 1 },
-    { nombre: 'Paroxetina', total: 30, restante: 30, dosisDiaria: 1 },
-    { nombre: 'Atomoxetina', total: 30, restante: 30, dosisDiaria: 1 },
-    { nombre: 'Quetiapina', total: 30, restante: 30, dosisDiaria: 1 }
-  ];
-
-  // Inicializar medicamentos si no existen
-  useEffect(() => {
-    if (medicamentos.length === 0) {
-      setMedicamentos(medicinasIniciales);
-    }
-  }, []);
-
-  const tomarDosis = (index) => {
-    const nuevosMedicamentos = [...medicamentos];
-    if (nuevosMedicamentos[index].restante > 0) {
-      nuevosMedicamentos[index].restante--;
-      setMedicamentos(nuevosMedicamentos);
-    }
-  };
-
-  const reiniciarConteo = (index) => {
-    const nuevosMedicamentos = [...medicamentos];
-    nuevosMedicamentos[index].restante = nuevosMedicamentos[index].total;
-    setMedicamentos(nuevosMedicamentos);
-  };
-
-  const actualizarDosisDiaria = (index, valor) => {
-    const nuevosMedicamentos = [...medicamentos];
-    nuevosMedicamentos[index].dosisDiaria = Math.max(1, parseInt(valor) || 1);
-    setMedicamentos(nuevosMedicamentos);
-  };
-
-  const calcularDiasRestantes = (med) => {
-    return Math.floor(med.restante / med.dosisDiaria);
-  };
-
-  return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-      <h2 className="text-xl font-bold text-purple-800 mb-4">Seguimiento de Medicamentos</h2>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-purple-50">
-            <tr>
-              <th className="p-3 text-left">Medicamento</th>
-              <th className="p-3 text-center">Dosis Diaria</th>
-              <th className="p-3 text-center">Restante</th>
-              <th className="p-3 text-center">Días Restantes</th>
-              <th className="p-3 text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {medicamentos.map((med, index) => (
-              <tr key={index} className="border-b hover:bg-purple-50">
-                <td className="p-3 font-medium">{med.nombre}</td>
-                <td className="p-3 text-center">
-                  <input
-                    type="number"
-                    min="1"
-                    value={med.dosisDiaria}
-                    onChange={(e) => actualizarDosisDiaria(index, e.target.value)}
-                    className="w-16 text-center border rounded py-1"
-                  />
-                </td>
-                <td className="p-3 text-center">
-                  <span className={`font-bold ${med.restante <= 5 ? 'text-red-600' : ''}`}>
-                    {med.restante} / {med.total}
-                  </span>
-                </td>
-                <td className="p-3 text-center">
-                  {calcularDiasRestantes(med)} días
-                </td>
-                <td className="p-3 text-center space-x-2">
-                  <button
-                    onClick={() => tomarDosis(index)}
-                    disabled={med.restante <= 0}
-                    className={`px-3 py-1 rounded ${med.restante > 0 ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-                  >
-                    Tomar
-                  </button>
-                  <button
-                    onClick={() => reiniciarConteo(index)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    Reiniciar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
+const { useState } = React;
 
 function GastosTracker() {
-  // Cargar gastos desde localStorage o usar valores por defecto
-  const [gastos, setGastos] = useState(() => {
-    const gastosGuardados = cargarDatos('gastos', [
-      { nombre: 'Café', semanal: 20000, mensual: 0, categoria: 'A', frecuencia: 'semanal' },
-      { nombre: 'Metro', semanal: 30000, mensual: 0, categoria: 'A', frecuencia: 'semanal' },
-      { nombre: 'Cuaderno', semanal: 0, mensual: 5000, categoria: 'A', frecuencia: 'mensual' },
-      { nombre: 'Acetaminofén', semanal: 0, mensual: 2000, categoria: 'A', frecuencia: 'mensual' },
-      { nombre: 'Esferos', semanal: 0, mensual: 4000, categoria: 'A', frecuencia: 'mensual' },
-      { nombre: 'Frutas', semanal: 15000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
-      { nombre: 'Huevos', semanal: 5600, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
-      { nombre: 'Papel higiénico', semanal: 3000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
-      { nombre: 'Jabón', semanal: 0, mensual: 7000, categoria: 'B', frecuencia: 'mensual' },
-      { nombre: 'Medicina', semanal: 90000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
-      { nombre: 'Cuchillas afeitar', semanal: 0, mensual: 8000, categoria: 'B', frecuencia: 'mensual' },
-      { nombre: 'Galletas', semanal: 8000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
-      { nombre: 'Nueces integrales', semanal: 7500, mensual: 0, categoria: 'B', frecuencia: 'semanal' }
-    ]);
-    return gastosGuardados;
-  });
-
-  // Estado para el seguimiento de medicamentos
-  const [medicamentos, setMedicamentos] = useState(() => {
-    return cargarDatos('medicamentos', []);
-  });
-
-  // Guardar cambios en localStorage cuando cambian los gastos o medicamentos
-  useEffect(() => {
-    localStorage.setItem('gastos', JSON.stringify(gastos));
-  }, [gastos]);
-
-  useEffect(() => {
-    if (medicamentos.length > 0) {
-      localStorage.setItem('medicamentos', JSON.stringify(medicamentos));
-    }
-  }, [medicamentos]);
+  const [gastos, setGastos] = useState([
+    { nombre: 'Café', semanal: 20000, mensual: 0, categoria: 'A', frecuencia: 'semanal' },
+    { nombre: 'Metro', semanal: 30000, mensual: 0, categoria: 'A', frecuencia: 'semanal' },
+    { nombre: 'Cuaderno', semanal: 0, mensual: 5000, categoria: 'A', frecuencia: 'mensual' },
+    { nombre: 'Acetaminofén', semanal: 0, mensual: 2000, categoria: 'A', frecuencia: 'mensual' },
+    { nombre: 'Esferos', semanal: 0, mensual: 4000, categoria: 'A', frecuencia: 'mensual' },
+    { nombre: 'Frutas', semanal: 15000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
+    { nombre: 'Huevos', semanal: 5600, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
+    { nombre: 'Papel higiénico', semanal: 3000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
+    { nombre: 'Jabón', semanal: 0, mensual: 7000, categoria: 'B', frecuencia: 'mensual' },
+    { nombre: 'Medicina', semanal: 90000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
+    { nombre: 'Cuchillas afeitar', semanal: 0, mensual: 8000, categoria: 'B', frecuencia: 'mensual' },
+    { nombre: 'Galletas', semanal: 8000, mensual: 0, categoria: 'B', frecuencia: 'semanal' },
+    { nombre: 'Nueces integrales', semanal: 7500, mensual: 0, categoria: 'B', frecuencia: 'semanal' }
+  ]);
 
   const [nuevoGasto, setNuevoGasto] = useState({ 
     nombre: '', semanal: 0, mensual: 0, categoria: 'A', frecuencia: 'semanal' 
@@ -303,12 +173,6 @@ function GastosTracker() {
             </div>
           </div>
         ))}
-        {/* Sección de seguimiento de medicamentos */}
-        <SeguimientoMedicamentos 
-          medicamentos={medicamentos} 
-          setMedicamentos={setMedicamentos} 
-        />
-        
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-slate-800 mb-4">Agregar Nuevo Gasto</h2>
           <div className="grid md:grid-cols-6 gap-3">
